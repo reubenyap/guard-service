@@ -97,6 +97,29 @@ doge:
   tssChainCode: ''
   derivationPath:
     -
+firo:
+  chainNetwork: 'rpc' # 'rpc'
+  rpc:
+    url: 'https://firo.publicnode.com'
+    timeout: 8
+    # username: ''
+    # password: ''
+    # apiKey: ''
+    # rps: 5 # request per second for RPC requests
+  bankPublicKey: '' # corresponding public key of lock address
+  txFeeSlippage: 20 # allowed slippage percentage for tx fees
+  confirmation: # required block confirmation
+    observation: 20 # an observation transaction (lock transaction) on Firo get confirmed
+    payment: 20 # a payment transaction on Firo get confirmed
+    cold: 20 # a cold storage transaction on Firo get confirmed
+    manual: 20 # a manual transaction on Firo get confirmed
+    arbitrary: 20 # an arbitrary transaction on Firo get confirmed
+  confirmationCheckPercent:
+    signFailedTx: 10
+    sentTx: 60
+  tssChainCode: ''
+  derivationPath:
+    -
 cardano:
   chainNetwork: 'koios' # 'ogmios', 'koios' or 'blockfrost'
   blockfrost:
@@ -258,6 +281,9 @@ healthCheck:
     doge:
       warnThreshold: 2500000000 # minimum recommended doge balance
       criticalThreshold: 500000000 # minimum required doge balance
+    firo:
+      warnThreshold: 10000000 # minimum recommended firo balance (0.1 FIRO)
+      criticalThreshold: 1000000 # minimum required firo balance (0.01 FIRO)
     eth:
       warnThreshold: '20000000000000000' # minimum recommended eth balance
       criticalThreshold: '4000000000000000' # minimum required eth balance
@@ -320,6 +346,9 @@ balanceHandler:
     tokensPerIteration:
       esplora: 9999
       blockcypher: 9999
+  firo:
+    tokensPerIteration:
+      rpc: 9999
   ethereum:
     tokensPerIteration:
       rpc: 10
