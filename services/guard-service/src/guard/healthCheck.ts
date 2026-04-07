@@ -6,6 +6,7 @@ import {
   ErgoExplorerAssetHealthCheckParam,
   ErgoNodeAssetHealthCheckParam,
   EvmRpcAssetHealthCheckParam,
+  FiroRpcAssetHealthCheckParam,
 } from '@rosen-bridge/asset-check';
 import {
   EventInfo,
@@ -30,6 +31,7 @@ import { ERG, ERGO_CHAIN } from '@rosen-chains/ergo';
 import { EXPLORER_NETWORK } from '@rosen-chains/ergo-explorer-network';
 import { NODE_NETWORK } from '@rosen-chains/ergo-node-network';
 import { ETH, ETHEREUM_CHAIN } from '@rosen-chains/ethereum';
+import { FIRO, FIRO_CHAIN } from '@rosen-chains/firo';
 
 import Configs from '../configs/configs';
 import GuardsBinanceConfigs from '../configs/guardsBinanceConfigs';
@@ -37,6 +39,7 @@ import GuardsBitcoinConfigs from '../configs/guardsBitcoinConfigs';
 import GuardsCardanoConfigs from '../configs/guardsCardanoConfigs';
 import GuardsErgoConfigs from '../configs/guardsErgoConfigs';
 import GuardsEthereumConfigs from '../configs/guardsEthereumConfigs';
+import GuardsFiroConfigs from '../configs/guardsFiroConfigs';
 import { rosenConfig } from '../configs/rosenConfig';
 import { DatabaseAction } from '../db/databaseAction';
 import { NotificationHandler } from '../handlers/notificationHandler';
@@ -128,7 +131,8 @@ const getHealthCheck = async () => {
     const bitcoinContracts = rosenConfig.contractReader(BITCOIN_CHAIN);
     const ethereumContracts = rosenConfig.contractReader(ETHEREUM_CHAIN);
     const binanceContracts = rosenConfig.contractReader(BINANCE_CHAIN);
-    // We skipped Doge and Firo AssetCheck parameters, so we don't need their contracts here
+    const firoContracts = rosenConfig.contractReader(FIRO_CHAIN);
+    // We skipped Doge AssetCheck parameter, so we don't need it's contracts here
     const bitcoinRunesContracts =
       rosenConfig.contractReader(BITCOIN_RUNES_CHAIN);
 
@@ -327,6 +331,18 @@ const getHealthCheck = async () => {
         GuardsBinanceConfigs.rpc.scannerInterval,
       );
       healthCheck.register(binanceScannerSyncCheck);
+    }
+    if (GuardsFiroConfigs.chainNetworkName === 'rpc') {
+      const firoAssetHealthCheck = new FiroRpcAssetHealthCheckParam(
+        FIRO_CHAIN,
+        FIRO,
+        firoContracts.addresses.lock,
+        Configs.firoWarnThreshold,
+        Configs.firoCriticalThreshold,
+        GuardsFiroConfigs.rpc.url,
+        8,
+      );
+      healthCheck.register(firoAssetHealthCheck);
     }
   }
 
